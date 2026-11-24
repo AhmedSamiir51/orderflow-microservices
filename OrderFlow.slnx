@@ -1,0 +1,21 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/OrderFlow.Contracts/OrderFlow.Contracts.csproj" />
+    <Project Path="src/OrderFlow.Inventory.Api/OrderFlow.Inventory.Api.csproj" />
+    <Project Path="src/OrderFlow.Inventory.Application/OrderFlow.Inventory.Application.csproj" />
+    <Project Path="src/OrderFlow.Inventory.Domain/OrderFlow.Inventory.Domain.csproj" />
+    <Project Path="src/OrderFlow.Inventory.Infrastructure/OrderFlow.Inventory.Infrastructure.csproj" />
+    <Project Path="src/OrderFlow.Notifications.Worker/OrderFlow.Notifications.Worker.csproj" />
+    <Project Path="src/OrderFlow.Orders.Api/OrderFlow.Orders.Api.csproj" />
+    <Project Path="src/OrderFlow.Orders.Application/OrderFlow.Orders.Application.csproj" />
+    <Project Path="src/OrderFlow.Orders.Domain/OrderFlow.Orders.Domain.csproj" />
+    <Project Path="src/OrderFlow.Orders.Infrastructure/OrderFlow.Orders.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/OrderFlow.Inventory.Api.Tests/OrderFlow.Inventory.Api.Tests.csproj" />
+    <Project Path="tests/OrderFlow.Inventory.Application.Tests/OrderFlow.Inventory.Application.Tests.csproj" />
+    <Project Path="tests/OrderFlow.Orders.Api.Tests/OrderFlow.Orders.Api.Tests.csproj" />
+    <Project Path="tests/OrderFlow.Orders.Application.Tests/OrderFlow.Orders.Application.Tests.csproj" />
+    <Project Path="tests/OrderFlow.Orders.Domain.Tests/OrderFlow.Orders.Domain.Tests.csproj" />
+  </Folder>
+</Solution>
