@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using OrderFlow.Contracts.Inventory;
 using OrderFlow.Contracts.Orders;
+using OrderFlow.Orders.Application.Common.Abstractions;
 using OrderFlow.Orders.Domain.Orders;
 using OrderFlow.Orders.Infrastructure.Persistence;
 
@@ -11,6 +12,7 @@ namespace OrderFlow.Orders.Infrastructure.Messaging.Consumers;
 /// <summary>Rejects the order when the Inventory service cannot reserve stock. Idempotent.</summary>
 public sealed class StockReservationFailedConsumer(
     OrdersDbContext db,
+    IEventPublisher eventPublisher,
     TimeProvider time,
     ILogger<StockReservationFailedConsumer> logger) : IConsumer<StockReservationFailed>
 {
@@ -33,7 +35,7 @@ public sealed class StockReservationFailedConsumer(
 
         order.Reject(message.Reason, time);
 
-        await context.Publish(new OrderRejected(order.Id, order.CustomerEmail, message.Reason, time.GetUtcNow()), context.CancellationToken);
+        await eventPublisher.Publish(new OrderRejected(order.Id, order.CustomerEmail, message.Reason, time.GetUtcNow()), context.CancellationToken);
         await db.SaveChangesAsync(context.CancellationToken);
 
         logger.LogInformation("Order {OrderId} rejected: {Reason}", order.Id, message.Reason);

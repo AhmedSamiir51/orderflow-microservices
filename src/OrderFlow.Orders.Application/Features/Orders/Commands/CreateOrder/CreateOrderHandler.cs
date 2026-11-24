@@ -1,4 +1,3 @@
-using MassTransit;
 using MediatR;
 using OrderFlow.Contracts.Orders;
 using OrderFlow.Orders.Application.Common.Abstractions;
@@ -11,7 +10,7 @@ namespace OrderFlow.Orders.Application.Features.Orders.Commands.CreateOrder;
 /// transactional outbox, so the event is stored in the same transaction as the order and is
 /// delivered to RabbitMQ only after the commit succeeds.
 /// </summary>
-public sealed class CreateOrderHandler(IOrdersDbContext db, IPublishEndpoint publishEndpoint, TimeProvider time)
+public sealed class CreateOrderHandler(IOrdersDbContext db, IEventPublisher eventPublisher, TimeProvider time)
     : IRequestHandler<CreateOrderCommand, OrderDto>
 {
     public async Task<OrderDto> Handle(CreateOrderCommand request, CancellationToken cancellationToken)
@@ -23,7 +22,7 @@ public sealed class CreateOrderHandler(IOrdersDbContext db, IPublishEndpoint pub
 
         db.Orders.Add(order);
 
-        await publishEndpoint.Publish(
+        await eventPublisher.Publish(
             new OrderCreated(
                 order.Id,
                 order.CustomerEmail,

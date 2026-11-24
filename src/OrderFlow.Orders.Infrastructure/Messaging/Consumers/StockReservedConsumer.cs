@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using OrderFlow.Contracts.Inventory;
 using OrderFlow.Contracts.Orders;
+using OrderFlow.Orders.Application.Common.Abstractions;
 using OrderFlow.Orders.Domain.Orders;
 using OrderFlow.Orders.Infrastructure.Persistence;
 
@@ -14,6 +15,7 @@ namespace OrderFlow.Orders.Infrastructure.Messaging.Consumers;
 /// </summary>
 public sealed class StockReservedConsumer(
     OrdersDbContext db,
+    IEventPublisher eventPublisher,
     TimeProvider time,
     ILogger<StockReservedConsumer> logger) : IConsumer<StockReserved>
 {
@@ -36,7 +38,7 @@ public sealed class StockReservedConsumer(
 
         order.Confirm(time);
 
-        await context.Publish(new OrderConfirmed(order.Id, order.CustomerEmail, time.GetUtcNow()), context.CancellationToken);
+        await eventPublisher.Publish(new OrderConfirmed(order.Id, order.CustomerEmail, time.GetUtcNow()), context.CancellationToken);
         await db.SaveChangesAsync(context.CancellationToken);
 
         logger.LogInformation("Order {OrderId} confirmed", order.Id);

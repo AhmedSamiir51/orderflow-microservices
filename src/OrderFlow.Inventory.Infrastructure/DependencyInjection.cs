@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using OrderFlow.Inventory.Application.Common.Abstractions;
+using OrderFlow.Inventory.Infrastructure.Messaging;
 using OrderFlow.Inventory.Infrastructure.Messaging.Consumers;
 using OrderFlow.Inventory.Infrastructure.Persistence;
 
@@ -29,6 +30,7 @@ public static class DependencyInjection
             }
         });
         services.AddScoped<IInventoryDbContext>(sp => sp.GetRequiredService<InventoryDbContext>());
+        services.AddScoped<IEventPublisher, MassTransitEventPublisher>();
 
         services.AddMassTransit(bus =>
         {

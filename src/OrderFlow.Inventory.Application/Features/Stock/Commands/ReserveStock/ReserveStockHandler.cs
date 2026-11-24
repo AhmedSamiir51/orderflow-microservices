@@ -1,4 +1,3 @@
-using MassTransit;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -16,7 +15,7 @@ namespace OrderFlow.Inventory.Application.Features.Stock.Commands.ReserveStock;
 /// </summary>
 public sealed class ReserveStockHandler(
     IInventoryDbContext db,
-    IPublishEndpoint publishEndpoint,
+    IEventPublisher eventPublisher,
     TimeProvider time,
     ILogger<ReserveStockHandler> logger) : IRequestHandler<ReserveStockCommand>
 {
@@ -27,7 +26,7 @@ public sealed class ReserveStockHandler(
         if (alreadyProcessed)
         {
             logger.LogInformation("Order {OrderId} was already reserved; republishing StockReserved", request.OrderId);
-            await publishEndpoint.Publish(new StockReserved(request.OrderId, time.GetUtcNow()), cancellationToken);
+            await eventPublisher.Publish(new StockReserved(request.OrderId, time.GetUtcNow()), cancellationToken);
             return;
         }
 
@@ -53,7 +52,7 @@ public sealed class ReserveStockHandler(
         if (failures.Count > 0)
         {
             var reason = string.Join("; ", failures);
-            await publishEndpoint.Publish(new StockReservationFailed(request.OrderId, reason, time.GetUtcNow()), cancellationToken);
+            await eventPublisher.Publish(new StockReservationFailed(request.OrderId, reason, time.GetUtcNow()), cancellationToken);
             return;
         }
 
@@ -64,7 +63,7 @@ public sealed class ReserveStockHandler(
             db.Reservations.Add(StockReservation.Create(request.OrderId, item, line.Quantity, time));
         }
 
-        await publishEndpoint.Publish(new StockReserved(request.OrderId, time.GetUtcNow()), cancellationToken);
+        await eventPublisher.Publish(new StockReserved(request.OrderId, time.GetUtcNow()), cancellationToken);
         await db.SaveChangesAsync(cancellationToken);
     }
 }
